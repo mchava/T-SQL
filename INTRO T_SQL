@@ -1,0 +1,51 @@
+--Create a table that lists all customer contact names. The table should include the Title, FirstName, MiddleName, LastName and Suffix of all customers.
+
+SELECT Title, FirstName, MiddleName, LastName, Suffix
+FROM SalesLT.Customer;
+
+--Complete the query to list the following elements for all customers:
+The salesperson
+A column named CustomerName that displays how the customer contact should be greeted (e.g. "Mr Smith").
+The customer's phone number (Phone)
+
+SELECT SalesPerson, Title + ' ' + LastName AS CustomerName, Phone
+FROM SalesLT.Customer;
+
+--Provide a list of all customer companies in the format <Customer ID>: <Company Name> 
+You'll need to use both CAST() and VARCHAR in your solution. 
+
+SELECT CAST(CustomerID AS VARCHAR) + ': ' + CompanyName AS CustomerCompany
+FROM SalesLT.Customer;
+
+--The SalesLT.SalesOrderHeader table contains records of sales orders. You have been asked to retrieve data for a report that shows:
+
+The sales order number and revision number in the format <Order Number> (<Revision>) (e.g. SO71774 (2)).
+The order date converted to ANSI standard format yyyy.mm.dd (e.g. 2015.01.31).
+
+SELECT SalesOrderNumber + ' (' + STR(RevisionNumber, 1) + ')' AS OrderRevision,
+	   CONVERT(NVARCHAR(30), OrderDate, 102) AS OrderDate
+FROM SalesLT.SalesOrderHeader;
+
+--The list should consist of a single field in the format:
+
+<first name> <last name> (e.g. Keith Harris) if the middle name is unknown,
+<first name> <middle name> <last name> (e.g. Jane M. Gates) if a middle name is stored in the database.
+
+SELECT FirstName + ' ' + ISNULL(MiddleName+ ' ', '') + LastName
+AS CustomerName
+FROM SalesLT.Customer;
+
+--Write a query that returns a list of customer IDs in one column, and a second column called PrimaryContact that contains the email address if known, and otherwise the phone number.
+
+SELECT CustomerID, COALESCE(EmailAddress, Phone) AS PrimaryContact
+FROM SalesLT.Customer;
+
+--Write a query to list sales order IDs and order dates with a column named ShippingStatus that contains the text 'Shipped' for orders with a known ship date, and 'Awaiting Shipment' for orders with no ship date.
+
+SELECT SalesOrderID, OrderDate,
+  CASE
+    WHEN ShipDate IS Null THEN 'Awaiting Shipment'
+    ELSE 'Shipped'
+  END AS ShippingStatus
+FROM SalesLT.SalesOrderHeader;
+
