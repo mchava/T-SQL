@@ -1,0 +1,62 @@
+--Use CHOOSE() and MONTH() to get the season in which each order was shipped from the Orders table. 
+--You should select the order ID, shipped date, and then the season aliased as ShippedSeason. 
+--You can copy and paste the below into your query. ['Winter', 'Winter', 'Spring', 'Spring', 'Spring', 'Summer', 'Summer', 'Summer', 'Autumn', 'Autumn', 'Autumn', 'Winter']
+
+Select OrderID,ShippedDate,choose(Month(ShippedDate),'Winter', 'Winter', 'Spring', 'Spring', 'Spring', 'Summer', 'Summer', 'Summer', 'Autumn', 'Autumn', 'Autumn', 'Winter') as ShippedSeason from DBO.Orders  where ShippedDate is  not null ;
+
+
+--Using the Suppliers table, select the company name and use a simple IIF expression to display 'outdated' if a company has a fax number, or 'modern' if it doesn't. 
+--Alias the result of the IIF expression to Status.
+
+SELECT CompanyName,
+CASE
+WHEN Fax IS NULL THEN 'modern'
+ELSE 'outdated'
+END AS Status
+FROM Suppliers;
+
+--Select from the Customers, Orders, and Order Details tables. Note that you need to use [Order Details] since the table name contains whitespace.
+--Use GROUP BY and ROLLUP() to get the total quantity ordered by all countries, while maintaining the total per country in your result set.
+--Your first column should be the country, and the second column the total quantity ordered by that country, aliased as TotalQuantity.
+
+Select C.Country, sum(OD.Quantity) as TotalQuantity from DBO.CUSTOMERS as C
+INNER JOIN DBO.ORDERS as O 
+ON C.CustomerID = O.CustomerID 
+INNER JOIN DBO.[Order Details] as OD 
+ON O.OrderID = OD.ORDERID
+Group by rollup(C.Country);
+
+--Convert the following query to be pivoted, using PIVOT().
+--SELECT CategoryID, AVG(UnitPrice)
+--FROM Products
+--GROUP BY CategoryID;
+--Your result set should look like this:
+
+Per Category	1	2	3	4	5	6	7	8
+Average Unit Price	37.98	23.06	25.16	28.73	20.25	54.01	32.37	20.68
+
+SELECT 'AverageUnitCost' AS PerCategory,   
+[1], [2], [3], [4], [5], [6]  
+FROM  
+(SELECT Round(avg(UnitPrice),2) as d , CategoryID   
+    FROM DBO.Products Group by CategoryID) As S 
+PIVOT  
+(  
+AVG(d)
+FOR CategoryID IN ([1], [2], [3], [4], [5], [6])  
+) AS PivotTable;   
+
+--Insert into the Region table the region ID 5 and the description 'Space'.
+--Then, in a second query, select the newly inserted data from the table using a WHERE clause.
+
+Insert into DBO.REGION  (RegionID , RegionDescription)  Values (5 , 'Space');
+
+Select * from DBO.Region where RegionID = 5  ;
+
+--Update the region descriptions in the Region table to be all uppercase, using SET and UPPER().
+--Next, select all data from the table to view your updates.
+
+Update DBO.Region 
+set RegionDescription = upper(RegionDescription);
+Select * from DBO.Region;
+
